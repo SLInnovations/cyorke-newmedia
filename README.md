@@ -1,8 +1,21 @@
-# Progress traps, claims, evidence, reasoning
+# New Media 11
 
-A click-through activity for Charlie's New Media 11 persuasive essay unit (session 1).
+Activities built with Charlie for New Media 11.
 
-Open `index.html` in any browser. No build step, no internet needed.
+`index.html` is the front page. It links to each activity. To add one, drop the new HTML file in this folder and copy a tile block in `index.html`, changing the `href` and the text.
+
+## What's here
+
+- `index.html` — the front page, just a list of links
+- `four-words.html` — the click-through lesson (progress trap, claim, evidence, reasoning) and the Real or fake? rounds. Pick which from its first screen
+- `essay-rewording.html` — turning the persuasive essay outline into his own sentences, three body paragraphs, copy button per paragraph, autosaves as he types
+- `images/` — photos used by `four-words.html`
+
+---
+
+## four-words.html
+
+Open it in any browser. No build step, no internet needed.
 
 Two parts, chosen from the home screen:
 
@@ -15,7 +28,7 @@ Two parts, chosen from the home screen:
 
 ## Editing the questions
 
-All the content lives in lists inside the `<script>` block at the bottom of `index.html`:
+All the content lives in lists inside the `<script>` block at the bottom of `four-words.html`:
 
 **Lesson rounds**
 
@@ -41,3 +54,14 @@ The made-up headlines in that round are written to sit beside the real ones. Che
 ## Images
 
 In `images/`. Photos from Unsplash. Any image that's missing just disappears from the page, so you can swap or delete freely.
+
+
+## essay-rewording.html
+
+Twenty-one screens. The blue box on each step is the sentence from the outline; the box underneath is where his version goes. Nothing is pre-filled.
+
+- Autosaves to the browser as he types, so closing the tab doesn't lose anything
+- A Copy button at the end of each paragraph, and one for all three
+- Bill C-34 status confirmed 27 October 2026: Safe Social Media Act, 45th Parliament, at second reading. Still a proposal, so "would", not "does"
+
+To change the prompts, edit the `<textarea>` ids and the blue `prompt` boxes in the HTML. The assembly lists are `P1`, `P2` and `P3` near the top of the script.
