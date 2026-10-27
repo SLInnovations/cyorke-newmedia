@@ -8,7 +8,7 @@ Activities built with Charlie for New Media 11.
 
 - `index.html` — the front page, just a list of links
 - `four-words.html` — the click-through lesson (progress trap, claim, evidence, reasoning) and the Real or fake? rounds. Pick which from its first screen
-- `essay-rewording.html` — turning the persuasive essay outline into his own sentences, three body paragraphs, copy button per paragraph, autosaves as he types
+- `essay-rewording.html` — the whole persuasive essay in his own words, following the teacher's template (hook, background, thesis, 3 body paragraphs, conclusion), copy button per section, autosaves as he types
 - `images/` — photos used by `four-words.html`
 
 ---
@@ -58,10 +58,12 @@ In `images/`. Photos from Unsplash. Any image that's missing just disappears fro
 
 ## essay-rewording.html
 
-Twenty-one screens. The blue box on each step is the sentence from the outline; the box underneath is where his version goes. Nothing is pre-filled.
+Thirty-three screens, matching the teacher's template field by field: Hook, Background, Thesis, then Topic sentence / Supporting points / Concluding sentence for each body paragraph, then Re-phrased thesis, Summary, Closing line.
+
+The blue box on each step is the sentence from the outline. The box underneath is where his version goes. Nothing is pre-filled. Each step is labelled with the template's own field name so it can be pasted straight into the right box.
 
 - Autosaves to the browser as he types, so closing the tab doesn't lose anything
 - A Copy button at the end of each paragraph, and one for all three
 - Bill C-34 status confirmed 27 October 2026: Safe Social Media Act, 45th Parliament, at second reading. Still a proposal, so "would", not "does"
 
-To change the prompts, edit the `<textarea>` ids and the blue `prompt` boxes in the HTML. The assembly lists are `P1`, `P2` and `P3` near the top of the script.
+Built from `gen.py`-style data: the `SECT` map near the top of the script lists which textarea ids belong to which section, and `ORDER` sets the order they assemble in.

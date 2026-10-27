@@ -3,385 +3,473 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Charlie: rewording the essay</title>
+<title>Charlie: the essay, in your words</title>
 <style>
   :root{--bg:#f6f4ef;--card:#fff;--ink:#1a1a1a;--muted:#5d5d5d;--line:#d8d3c8;
         --accent:#2a6fb0;--good:#2a7a2a;--bad:#a33;--shadow:0 2px 8px rgba(0,0,0,.08)}
   *{box-sizing:border-box}
   body{margin:0;font-family:Verdana,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
-  .wrap{max-width:900px;margin:0 auto;padding:18px 16px 96px}
-  header{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap}
-  h1{font-size:1.25rem;margin:0}
-  h2{font-size:1.35rem;margin:0 0 8px}
-  .dots{display:flex;gap:5px;margin-left:auto}
-  .dot{width:9px;height:9px;border-radius:50%;background:var(--line)}
-  .dot.on{background:var(--accent)} .dot.done{background:#b9c9d8}
+  .wrap{max-width:900px;margin:0 auto;padding:16px 16px 100px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  h1{font-size:1.15rem;margin:0}
+  h2{font-size:1.3rem;margin:0 0 8px}
+  .where{margin-left:auto;font-size:.82rem;color:var(--muted)}
+  .bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+  .bar div{height:100%;background:var(--accent);width:0;transition:width .25s}
   .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
         padding:17px;box-shadow:var(--shadow);margin-bottom:13px}
   .screen{display:none} .screen.on{display:block}
   .lead{font-size:1.03rem;margin:0 0 12px} .muted{color:var(--muted)}
+  .field{display:inline-block;font-size:.72rem;letter-spacing:.06em;font-weight:bold;color:#fff;
+         background:var(--accent);border-radius:4px;padding:3px 9px;margin-bottom:9px;text-transform:uppercase}
+  .field.ethos{background:#6a4a9c} .field.pathos{background:#a3562a}
   .prompt{background:#eef3fa;border-left:4px solid var(--accent);padding:10px 13px;
           border-radius:0 8px 8px 0;margin:0 0 12px;font-size:1rem}
-  .prompt b{display:block;font-size:.73rem;letter-spacing:.06em;color:var(--accent);margin-bottom:3px}
-  .ask{font-size:1.15rem;margin:0 0 10px}
+  .prompt b{display:block;font-size:.72rem;letter-spacing:.06em;color:var(--accent);margin-bottom:3px}
+  .ask{font-size:1.13rem;margin:0 0 10px}
   textarea{width:100%;font-family:inherit;font-size:1.05rem;line-height:1.5;padding:11px 13px;
-           border:1.5px solid var(--line);border-radius:9px;background:#fffef9;resize:vertical;min-height:88px}
+           border:1.5px solid var(--line);border-radius:9px;background:#fffef9;resize:vertical;min-height:84px}
   textarea:focus{outline:none;border-color:var(--accent)}
   .hint{font-size:.88rem;color:var(--muted);margin:7px 0 0}
   .nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
-       padding:10px 16px;display:flex;gap:10px;align-items:center}
+       padding:10px 16px;display:flex;gap:9px;align-items:center}
   .spacer{flex:1}
-  button{font-family:inherit;font-size:1rem;padding:11px 19px;border-radius:10px;
+  button{font-family:inherit;font-size:1rem;padding:11px 18px;border-radius:10px;
          border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
   button:hover{border-color:var(--accent)}
   button.go{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:bold}
+  button.sm{font-size:.84rem;padding:8px 12px}
+  .out{white-space:pre-wrap;background:#fffef9;border:1.5px solid var(--line);border-radius:9px;
+       padding:14px 16px;font-size:1.03rem;line-height:1.7;min-height:90px}
+  .copied{color:var(--good);font-weight:bold;margin-left:10px;display:none}
+  .copied.show{display:inline}
+  .warn{background:#fff6d6;border:1px solid #e0c060;border-radius:9px;padding:10px 13px;font-size:.93rem}
   .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px}
   .ap{border:1.2px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
   .ap h3{margin:0 0 2px;font-size:1.1rem}
   .ap .say{font-size:.82rem;color:var(--muted);font-style:italic;margin:0 0 8px}
   .ap .r{display:flex;gap:8px;margin-bottom:5px}
-  .ap .t{flex:0 0 74px;font-size:.68rem;font-weight:bold;color:#fff;border-radius:3px;
+  .ap .t{flex:0 0 70px;font-size:.66rem;font-weight:bold;color:#fff;border-radius:3px;
          padding:2px 4px;text-align:center;height:fit-content}
-  .out{white-space:pre-wrap;background:#fffef9;border:1.5px solid var(--line);border-radius:9px;
-       padding:14px 16px;font-size:1.05rem;line-height:1.7;min-height:120px}
-  .copied{color:var(--good);font-weight:bold;margin-left:10px;display:none}
-  .copied.show{display:inline}
-  .warn{background:#fff6d6;border:1px solid #e0c060;border-radius:9px;padding:10px 13px;font-size:.93rem}
-  .stepline{font-size:.85rem;color:var(--muted);margin-bottom:6px}
-  @media(max-width:560px){h1{font-size:1.05rem}.ask{font-size:1.05rem}}
+  .menu a{display:block;text-decoration:none;color:inherit;border:1.5px solid var(--line);
+          border-radius:10px;padding:12px 15px;margin-bottom:9px;background:#fff;cursor:pointer}
+  .menu a:hover{border-color:var(--accent)}
+  .menu a b{color:var(--accent)} .menu a span{display:block;font-size:.88rem;color:var(--muted)}
 </style>
 </head>
 <body>
 <div class="wrap">
-<header><h1>Rewording the essay</h1><div class="dots" id="dots"></div></header>
-
+<header><h1>The essay, in your words</h1><div class="where" id="where"></div></header>
+<div class="bar"><div id="barFill"></div></div>
 <section class="screen on">
   <div class="card">
     <h2>Where you're at</h2>
-    <p class="lead">Outline: done. Sources: done, five of them in APA. What's missing is the actual paragraphs.</p>
-    <p class="lead">Today we go through all three body paragraphs and put them in your words. You say it, I type it.</p>
-    <p class="lead muted">You already know this stuff. You've watched the documentary twice and you know exactly what your progress trap is. The annoying bit has been getting it into sentences, so that's the only thing we're doing today.</p>
+    <p class="lead">Outline: done. Sources: done, five of them in APA. What's missing is the writing.</p>
+    <p class="lead">We go through the whole thing in order, the same order the teacher's template asks for. You say it, I type it.</p>
+    <p class="lead muted">You already know this stuff. You've watched the documentary twice and you know exactly what your progress trap is. The annoying bit has been getting it into sentences, so that's the only thing we're doing.</p>
+    <div class="menu" style="margin-top:14px">
+      <a onclick="jump(2)"><b>Introduction</b><span>Hook, background, thesis</span></a>
+      <a onclick="jump(6)"><b>Body paragraph 1</b><span>False information spreads quickly</span></a>
+      <a onclick="jump(13)"><b>Body paragraph 2</b><span>Deciding what to trust</span></a>
+      <a onclick="jump(18)"><b>Body paragraph 3</b><span>Society scrambling to catch up</span></a>
+      <a onclick="jump(23)"><b>Conclusion</b><span>Thesis again, summary, the line that lands</span></a>
+    </div>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
     <h2>Three ways to talk someone round</h2>
     <p class="lead muted">Aristotle, about 2,300 years ago. Still what every ad and every essay runs on.</p>
     <div class="three">
-      <div class="ap">
-        <h3>Logos</h3><p class="say">LOW-goss · the logic one</p>
+      <div class="ap"><h3>Logos</h3><p class="say">LOW-goss · the logic one</p>
         <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Facts, numbers, experts. Proof someone could check.</div></div>
-        <div class="r"><div class="t" style="background:#2a7a2a">YOURS</div><div>"The Government of Canada explains that algorithms push content people react to."</div></div>
-      </div>
-      <div class="ap">
-        <h3>Pathos</h3><p class="say">PAY-thoss · the feelings one</p>
-        <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Makes the reader feel something. Worry, anger, recognition.</div></div>
-        <div class="r"><div class="t" style="background:#2a7a2a">YOURS</div><div>"Imagine a video of someone you know saying something they never said."</div></div>
-      </div>
-      <div class="ap">
-        <h3>Ethos</h3><p class="say">EE-thoss · the trust one</p>
-        <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Why believe you? Name real sources. Be fair to the other side.</div></div>
-        <div class="r"><div class="t" style="background:#2a7a2a">YOURS</div><div>"MediaSmarts, a Canadian media literacy organisation, found that..."</div></div>
-      </div>
+        <div class="r"><div class="t" style="background:#2a7a2a">YOURS</div><div>"The Government of Canada explains that algorithms push content people react to."</div></div></div>
+      <div class="ap"><h3>Pathos</h3><p class="say">PAY-thoss · the feelings one</p>
+        <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Makes the reader feel something.</div></div>
+        <div class="r"><div class="t" style="background:#a3562a">YOURS</div><div>"Imagine a video of someone you know saying something they never said."</div></div></div>
+      <div class="ap"><h3>Ethos</h3><p class="say">EE-thoss · the trust one</p>
+        <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Why believe you? Name real sources.</div></div>
+        <div class="r"><div class="t" style="background:#6a4a9c">YOURS</div><div>"MediaSmarts, a Canadian media literacy organisation, found that..."</div></div></div>
     </div>
-    <p class="hint">Your essay is already stuffed with logos. Every source you've got is logos.</p>
+    <p class="hint">Your essay is already stuffed with logos. Every source you've got is logos. Watch for the two purple and orange labels coming up.</p>
   </div>
 </section>
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 1 · step 1 of 6 · topic sentence</p>
+    <h2>Introductory paragraph</h2>
+    <p class="lead">Hook, a bit of background, then your thesis as the very last sentence.</p>
+    
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <span class="field">Hook</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 1 of 3</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Technology is supposed to make life easier, but sometimes the things created to help people can create new problems that society is not ready for.</div>
+    <p class="ask">Your opening line. Say it so someone would keep reading.</p>
+    <textarea id="i1" placeholder="Type what he says..."></textarea>
+    <p class="hint">Stuck? “What's the most annoying thing technology has done to you lately?” Start there.</p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <span class="field">Background / context</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 2 of 3</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>In the documentary Surviving Progress, a “progress trap” is defined as an advance that can cause harm when people fail to consider its consequences. Online information, social media and AI bring big benefits, but also risks that people, schools and governments are still learning to manage.</div>
+    <p class="ask">Explain what a progress trap is, in your words. You know this one cold.</p>
+    <textarea id="i2" placeholder="Type what he says..."></textarea>
+    <p class="hint">Name the documentary. That's a source, and it counts.</p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <span class="field">Thesis (ONE sentence, 3 ideas)</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 3 of 3</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Modern technology can become a progress trap because false information can spread quickly, it is hard to decide what information to trust, and it is developing faster than society can create rules to manage its risks.</div>
+    <p class="ask">One sentence. Your three reasons, in a row. This is the last line of the paragraph.</p>
+    <textarea id="i3" placeholder="Type what he says..."></textarea>
+    <p class="hint">Keep all three in. Each one is a body paragraph, so they have to match what's coming.</p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <h2>Introductory paragraph, yours</h2>
+    <div class="out" id="out_intro">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_intro')">Copy it</button>
+      <span class="copied" id="cop_out_intro">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
+    </p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <h2>Body paragraph 1</h2>
+    <p class="lead">False information spreads quickly.</p>
+    
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <span class="field">Topic sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 1 · step 1 of 6</p>
     <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Modern technology can become a progress trap because it makes false information much easier to create and spread.</div>
     <p class="ask">Say that like you'd say it. Same point, your words.</p>
     <textarea id="s1" placeholder="Type what he says..."></textarea>
-    <p class="hint">If he just wants the outline version, ask once: "would you say it like that?" Then take whatever comes.</p>
+    <p class="hint">If he wants the outline version, ask once: “would you say it like that?” Then take whatever comes.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 1 · step 2 of 6 · how fast things spread</p>
-    <div class="prompt"><b>TWO POINTS FROM THE OUTLINE</b>The internet and social media can share information almost instantly. False information can move just as quickly as true information.</div>
+    <span class="field">Supporting point</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 1 · step 2 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>The internet and social media can share information almost instantly. False information can move just as quickly as true information.</div>
     <p class="ask">Put those two together as one sentence.</p>
     <textarea id="s2" placeholder="Type what he says..."></textarea>
-    <p class="hint">Stuck? "Can you think of something that spread really fast, that turned out to be wrong?"</p>
+    <p class="hint">Stuck? “Can you think of something that spread really fast and turned out to be wrong?”</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 1 · step 3 of 6 · the algorithm bit</p>
-    <div class="prompt"><b>POINT FROM THE OUTLINE</b>Social media algorithms recommend content people are likely to interact with, which can amplify false posts.</div>
+    <span class="field">Supporting point</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 1 · step 3 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Social media algorithms recommend content people are likely to interact with, which can amplify false posts.</div>
     <p class="ask">Why does the feed end up pushing the fake stuff?</p>
     <textarea id="s3" placeholder="Type what he says..."></textarea>
-    <p class="hint">Stuck? "What does the app actually measure?" (reactions, not truth)</p>
+    <p class="hint">Stuck? “What does the app actually measure?” (reactions, not truth)</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 1 · step 4 of 6 · naming the source · this is ethos</p>
-    <div class="prompt"><b>THE SOURCE</b>Government of Canada, "Learn about online disinformation" (2024), sections on Algorithms and Artificial intelligence.</div>
-    <p class="ask">Now say where you got it. Start with "The Government of Canada explains that..."</p>
+    <span class="field ethos">Supporting point + source  ·  ethos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 1 · step 4 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Government of Canada, “Learn about online disinformation” (2024), sections on Algorithms and Artificial intelligence.</div>
+    <p class="ask">Now say where you got it. Start with “The Government of Canada explains that...”</p>
     <textarea id="s4" placeholder="Type what he says..."></textarea>
-    <p class="hint">Naming the source is the credibility move. It's worth marks twice: research proof, and ethos.</p>
+    <p class="hint">Naming the source is worth marks twice: research proof, and ethos.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 1 · step 5 of 6 · deepfakes · try pathos here</p>
-    <div class="prompt"><b>POINT FROM THE OUTLINE</b>Generative AI can produce realistic fake images, voices and videos, including deepfakes.</div>
+    <span class="field pathos">Supporting point  ·  pathos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 1 · step 5 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Generative AI can produce realistic fake images, voices and videos, including deepfakes.</div>
     <p class="ask">This one can be the sentence that makes the reader feel something. What's the worst version of this?</p>
     <textarea id="s5" placeholder="Type what he says..."></textarea>
     <p class="hint">One feelings sentence is plenty. Pile them up and the reader stops trusting you.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 1 · step 6 of 6 · closing sentence</p>
+    <span class="field">Concluding sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 1 · step 6 of 6</p>
     <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Technology has made sharing information faster and easier, but the same progress has also made it easier for false information to reach large numbers of people.</div>
-    <p class="ask">Finish the paragraph. Same idea as your first sentence, but like you're wrapping up.</p>
+    <p class="ask">Finish the paragraph. Same idea as your topic sentence, but like you're wrapping up.</p>
     <textarea id="s6" placeholder="Type what he says..."></textarea>
-    <p class="hint">That's the whole paragraph done. Next screen puts it together.</p>
+    
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <h2>Paragraph 1, yours</h2>
-    <p class="lead muted">Every word of this came out of your mouth.</p>
-    <div class="out" id="out1">Nothing typed yet.</div>
+    <h2>Body paragraph 1, yours</h2>
+    <div class="out" id="out_b1">Nothing typed yet.</div>
     <p style="margin-top:13px">
-      <button class="go" onclick="copyOut('out1')">Copy it</button>
-      <span class="copied" id="copied1">Copied</span>
-      <button onclick="go(-1)" style="margin-left:8px">Go back and change something</button>
+      <button class="go" onclick="copyOut('out_b1')">Copy it</button>
+      <span class="copied" id="cop_out_b1">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
     </p>
-    <p class="hint">Paste it into the Google Doc, or wait and copy all three at the end.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <h2>Paragraph 2</h2>
-    <p class="lead">Same deal. This one's about how hard it is to know what to trust.</p>
+    <h2>Body paragraph 2</h2>
+    <p class="lead">Deciding what to trust.</p>
+    
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 2 · step 1 of 4 · topic sentence</p>
+    <span class="field">Topic sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 2 · step 1 of 4</p>
     <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Having so much information online can make it difficult for people to decide what is trustworthy.</div>
     <p class="ask">Your words. What's the problem with having everything available?</p>
     <textarea id="b2a" placeholder="Type what he says..."></textarea>
-    <p class="hint">Stuck? "You search something and get a million results. Then what?"</p>
+    <p class="hint">Stuck? “You search something and get a million results. Then what?”</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 2 · step 2 of 4 · the shortcut problem</p>
-    <div class="prompt"><b>POINTS FROM THE OUTLINE</b>People can find huge amounts of information with a quick search. A familiar-looking influencer or a popular post is not automatically an expert source.</div>
+    <span class="field">Supporting point</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 2 · step 2 of 4</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>People can find huge amounts of information with a quick search. A familiar-looking influencer or a popular post is not automatically an expert source.</div>
     <p class="ask">Why do people end up believing the wrong person?</p>
     <textarea id="b2b" placeholder="Type what he says..."></textarea>
-    <p class="hint">Stuck? "If you've seen someone's face a hundred times, does that make them right?"</p>
+    <p class="hint">Stuck? “If you've seen someone's face a hundred times, does that make them right?”</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 2 · step 3 of 4 · naming the source · ethos again</p>
-    <div class="prompt"><b>THE SOURCE</b>MediaSmarts, "The basics of verifying information", section "Information Sorting". It explains that teens may rely on peers, influencers or how real something looks, as shortcuts when they're overwhelmed.</div>
-    <p class="ask">Say what MediaSmarts found. Start with "MediaSmarts, a Canadian media literacy organisation, found that..."</p>
+    <span class="field ethos">Supporting point + source  ·  ethos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 2 · step 3 of 4</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>MediaSmarts, “The basics of verifying information”, section “Information Sorting”. Teens may rely on peers, influencers or how real something looks, as shortcuts when they're overwhelmed.</div>
+    <p class="ask">Say what MediaSmarts found. Start with “MediaSmarts, a Canadian media literacy organisation, found that...”</p>
     <textarea id="b2c" placeholder="Type what he says..."></textarea>
-    <p class="hint">Second time doing this move. It should feel easier than it did in paragraph 1.</p>
+    <p class="hint">Second time doing this move. Should feel easier than paragraph 1.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 2 · step 4 of 4 · closing sentence</p>
+    <span class="field">Concluding sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 2 · step 4 of 4</p>
     <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Easy access to information is useful, but it becomes a problem when people cannot tell which sources deserve their trust.</div>
     <p class="ask">Wrap it up. Your words.</p>
     <textarea id="b2d" placeholder="Type what he says..."></textarea>
+    
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <h2>Paragraph 2, yours</h2>
-    <div class="out" id="out2">Nothing typed yet.</div>
+    <h2>Body paragraph 2, yours</h2>
+    <div class="out" id="out_b2">Nothing typed yet.</div>
     <p style="margin-top:13px">
-      <button class="go" onclick="copyOut('out2')">Copy it</button>
-      <span class="copied" id="copied2">Copied</span>
+      <button class="go" onclick="copyOut('out_b2')">Copy it</button>
+      <span class="copied" id="cop_out_b2">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
     </p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <h2>Paragraph 3</h2>
-    <p class="lead">Last one. This is about governments and schools scrambling to catch up.</p>
-    <div class="warn"><b>Checked it:</b> Bill C-34, the Safe Social Media Act, is at second reading in the House of Commons as of 21 October 2026. Still a proposal, not law. So every sentence says <b>would</b>, not <b>does</b>.</div>
+    <h2>Body paragraph 3</h2>
+    <p class="lead">Society scrambling to catch up.</p>
+    <div class="warn"><b>Checked 27 Oct 2026:</b> Bill C-34, the Safe Social Media Act, is at second reading in the House of Commons. Still a proposal, not law. So every sentence says <b>would</b>, not <b>does</b>.</div>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 3 · step 1 of 4 · topic sentence</p>
+    <span class="field">Topic sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 3 · step 1 of 4</p>
     <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Technology is developing so quickly that governments and schools are creating new rules and education programs to address risks that have already appeared.</div>
     <p class="ask">Your words. What are governments and schools doing, and why now?</p>
     <textarea id="b3a" placeholder="Type what he says..."></textarea>
-    <p class="hint">Stuck? "They're making rules after the thing already happened. What does that tell you?"</p>
+    <p class="hint">Stuck? Rules always turn up after the damage. Helmet laws after head injuries. Trail closures after the trails got wrecked.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 3 · step 2 of 4 · the bill</p>
-    <div class="prompt"><b>POINT FROM THE OUTLINE</b>Canada introduced Bill C-34, the proposed Safe Social Media Act. If passed, it would apply to certain social media and AI chatbot services, covering platform risk management, harmful content, and labelling realistic AI-generated material.</div>
-    <p class="ask">Say what the bill would do. Watch the word "would".</p>
+    <span class="field">Supporting point + source</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 3 · step 2 of 4</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Canada introduced Bill C-34, the proposed Safe Social Media Act. If passed, it would apply to certain social media and AI chatbot services, covering platform risk management, harmful content, and labelling realistic AI-generated material. (Canadian Heritage, 2026)</div>
+    <p class="ask">Say what the bill would do. Watch the word “would”.</p>
     <textarea id="b3b" placeholder="Type what he says..."></textarea>
-    <p class="hint">It's at second reading, so it hasn't passed. "Would apply", "would require". Getting this wrong costs credibility marks.</p>
+    <p class="hint">At second reading, so it hasn't passed. “Would apply”, “would require”.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 3 · step 3 of 4 · the AI literacy thing · name both sources</p>
-    <div class="prompt"><b>POINT FROM THE OUTLINE</b>A National AI Literacy Initiative launched in September 2026 to help people recognise AI risks including misinformation, bias and privacy loss.<br><br><b>SOURCES</b>Canadian Heritage (2026) for the bill. Innovation, Science and Economic Development Canada (2026) for the AI literacy initiative.</div>
+    <span class="field ethos">Supporting point + source  ·  ethos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 3 · step 3 of 4</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>A National AI Literacy Initiative launched in September 2026 to help people recognise AI risks including misinformation, bias and privacy loss. (Innovation, Science and Economic Development Canada, 2026)</div>
     <p class="ask">Say what the initiative is for, and name who it came from.</p>
     <textarea id="b3c" placeholder="Type what he says..."></textarea>
+    
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <p class="stepline">Paragraph 3 · step 4 of 4 · closing sentence</p>
+    <span class="field">Concluding sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph 3 · step 4 of 4</p>
     <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>When governments and schools have to develop new safeguards for technology that people already use, it shows how quickly innovation can outpace society's preparations.</div>
     <p class="ask">Finish it. Your words.</p>
     <textarea id="b3d" placeholder="Type what he says..."></textarea>
-    <p class="hint">Careful here: new rules show governments are responding. That isn't quite the same as proving technology is out of control. Your outline flags that too.</p>
+    <p class="hint">Careful: new rules show governments are responding. That isn't quite the same as proving technology is out of control.</p>
   </div>
 </section>
-
 <section class="screen">
   <div class="card">
-    <h2>Paragraph 3, yours</h2>
-    <div class="out" id="out3">Nothing typed yet.</div>
+    <h2>Body paragraph 3, yours</h2>
+    <div class="out" id="out_b3">Nothing typed yet.</div>
     <p style="margin-top:13px">
-      <button class="go" onclick="copyOut('out3')">Copy it</button>
-      <span class="copied" id="copied3">Copied</span>
+      <button class="go" onclick="copyOut('out_b3')">Copy it</button>
+      <span class="copied" id="cop_out_b3">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
     </p>
-  </div>
-  <div class="card">
-    <h2>All three</h2>
-    <div class="out" id="outAll" style="font-size:.98rem">Nothing typed yet.</div>
-    <p style="margin-top:13px">
-      <button class="go" onclick="copyOut('outAll')">Copy all three</button>
-      <span class="copied" id="copiedAll">Copied</span>
-    </p>
-    <p class="hint">Then the screenshots: open each source, grab the page, highlight the sentence used, label it Body 1, 2 or 3.</p>
   </div>
 </section>
-
+<section class="screen">
+  <div class="card">
+    <h2>Concluding paragraph</h2>
+    <p class="lead">Thesis again in new words, then your main ideas, then a line that lands.</p>
+    
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <span class="field">Re-phrased thesis (first sentence)</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 1 of 3</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Technology has improved communication and access to information, but it can become a progress trap when it spreads misinformation, overwhelms people with information and advances faster than society can manage its risks.</div>
+    <p class="ask">Your thesis again, said differently. Same meaning, new words.</p>
+    <textarea id="c1" placeholder="Type what he says..."></textarea>
+    <p class="hint">Don't copy your intro thesis. The teacher is checking you can say it two ways.</p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <span class="field">Summary of main ideas</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 2 of 3</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>The internet and AI make false information easier to create and share; people need stronger skills to evaluate sources; and governments and schools are developing new safeguards and education in response.</div>
+    <p class="ask">Your three paragraphs in one or two sentences. No new ideas allowed here.</p>
+    <textarea id="c2" placeholder="Type what he says..."></textarea>
+    
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <span class="field">Closing line (the reverse hook)</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 3 of 3</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Progress should not just mean asking whether we can create a new technology; it should also mean asking whether we understand what will happen after we create it.</div>
+    <p class="ask">End with a bang. Tie it back to your hook.</p>
+    <textarea id="c3" placeholder="Type what he says..."></textarea>
+    <p class="hint">Look back at your hook on screen 3. Echo a word or an idea from it.</p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <h2>Concluding paragraph, yours</h2>
+    <div class="out" id="out_concl">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_concl')">Copy it</button>
+      <span class="copied" id="cop_out_concl">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
+    </p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <h2>The whole thing</h2>
+    <p class="lead muted">Every word of this came out of your mouth.</p>
+    <div class="out" id="out_all" style="font-size:.98rem">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_all')">Copy all of it</button>
+      <span class="copied" id="cop_out_all">Copied</span>
+    </p>
+    <p class="hint">Paste each part into its box in the teacher's template. Then the screenshots: open each source, grab the page, highlight the sentence used, label it.</p>
+  </div>
+</section>
 </div>
-
 <div class="nav">
   <button onclick="go(-1)" id="back">&larr; Back</button>
-  <button onclick="saveNow()" id="saveBtn" style="font-size:.85rem;padding:8px 12px">Save</button>
+  <button class="sm" onclick="home()">List</button>
+  <button class="sm" onclick="saveNow()" id="saveBtn">Save</button>
   <div class="spacer"></div>
   <button class="go" onclick="go(1)" id="fwd">Next &rarr;</button>
 </div>
 <script>
 var screens = document.querySelectorAll('.screen');
-var dots = document.getElementById('dots');
 var at = 0;
-var P1 = ['s1','s2','s3','s4','s5','s6'];
-var P2 = ['b2a','b2b','b2c','b2d'];
-var P3 = ['b3a','b3b','b3c','b3d'];
-var IDS = P1.concat(P2, P3);
-var KEY = 'charlie-body1';
-
-for (var i=0;i<screens.length;i++){
-  var d = document.createElement('div');
-  d.className = 'dot' + (i===0?' on':'');
-  dots.appendChild(d);
-}
+var SECT = {"intro": ["i1", "i2", "i3"], "b1": ["s1", "s2", "s3", "s4", "s5", "s6"], "b2": ["b2a", "b2b", "b2c", "b2d"], "b3": ["b3a", "b3b", "b3c", "b3d"], "concl": ["c1", "c2", "c3"]};
+var IDS = [];
+for (var k in SECT){ IDS = IDS.concat(SECT[k]); }
+var ORDER = ["intro", "b1", "b2", "b3", "concl"];
+var KEY = 'charlie-essay-words';
 
 function paint(){
-  for (var i=0;i<screens.length;i++){
-    screens[i].classList.toggle('on', i===at);
-    dots.children[i].className = 'dot' + (i===at ? ' on' : (i<at ? ' done' : ''));
-  }
+  for (var i=0;i<screens.length;i++){ screens[i].classList.toggle('on', i===at); }
   document.getElementById('back').style.visibility = at===0 ? 'hidden' : 'visible';
   document.getElementById('fwd').style.visibility = at===screens.length-1 ? 'hidden' : 'visible';
+  document.getElementById('barFill').style.width = Math.round((at/(screens.length-1))*100) + '%';
+  document.getElementById('where').textContent = (at+1) + ' of ' + screens.length;
   build();
   window.scrollTo(0,0);
   var ta = screens[at].querySelector('textarea');
   if (ta) ta.focus();
 }
-
-function go(n){
-  save();
-  at = Math.min(screens.length-1, Math.max(0, at+n));
-  paint();
-}
-
-function val(id){
-  var el = document.getElementById(id);
-  return el ? el.value.trim() : '';
-}
-
+function go(n){ save(); at = Math.min(screens.length-1, Math.max(0, at+n)); paint(); }
+function jump(n){ save(); at = n; paint(); }
+function home(){ jump(0); }
+function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function joinUp(list){
   var parts = [];
   for (var i=0;i<list.length;i++){ var v = val(list[i]); if (v) parts.push(v); }
   return parts.join(' ');
 }
-function build(){
-  var p1 = joinUp(P1), p2 = joinUp(P2), p3 = joinUp(P3);
-  set('out1', p1); set('out2', p2); set('out3', p3);
-  var all = [];
-  if (p1) all.push(p1);
-  if (p2) all.push(p2);
-  if (p3) all.push(p3);
-  set('outAll', all.join('\n\n'));
-}
 function set(id, text){
   var el = document.getElementById(id);
   if (el) el.textContent = text ? text : 'Nothing typed yet.';
 }
-
+function build(){
+  var all = [];
+  for (var i=0;i<ORDER.length;i++){
+    var k = ORDER[i];
+    var t = joinUp(SECT[k]);
+    set('out_' + k, t);
+    if (t) all.push(t);
+  }
+  set('out_all', all.join('\n\n'));
+}
 function copyOut(which){
   var text = document.getElementById(which).textContent;
   if (text === 'Nothing typed yet.') return;
-  var tag = which.replace('out','');
   var done = function(){
-    var c = document.getElementById('copied' + tag);
+    var c = document.getElementById('cop_' + which);
     if (!c) return;
     c.className = 'copied show';
     setTimeout(function(){ c.className = 'copied'; }, 2000);
   };
+  function fallback(){
+    var t = document.createElement('textarea');
+    t.value = text; t.style.position='fixed'; t.style.top='-1000px';
+    document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); done(); } catch(e){ alert('Select the text and copy it manually.'); }
+    document.body.removeChild(t);
+  }
   try {
     if (navigator.clipboard && navigator.clipboard.writeText){
-      navigator.clipboard.writeText(text).then(done, fallback);
-      return;
+      navigator.clipboard.writeText(text).then(done, fallback); return;
     }
   } catch(e){}
   fallback();
-  function fallback(){
-    var t = document.createElement('textarea');
-    t.value = text;
-    t.style.position = 'fixed'; t.style.top = '-1000px';
-    document.body.appendChild(t);
-    t.select();
-    try { document.execCommand('copy'); done(); }
-    catch(e){ alert('Select the text and copy it manually.'); }
-    document.body.removeChild(t);
-  }
 }
-
 function save(){
   var data = {};
   for (var i=0;i<IDS.length;i++){ data[IDS[i]] = val(IDS[i]); }
@@ -389,34 +477,26 @@ function save(){
 }
 function saveNow(){
   save();
-  var b = document.getElementById('saveBtn');
-  var old = b.textContent;
-  b.textContent = 'Saved';
-  setTimeout(function(){ b.textContent = old; }, 1500);
+  var b = document.getElementById('saveBtn'); var old = b.textContent;
+  b.textContent = 'Saved'; setTimeout(function(){ b.textContent = old; }, 1500);
 }
 function load(){
   try {
-    var raw = localStorage.getItem(KEY);
-    if (!raw) return;
-    var data = JSON.parse(raw);
+    var raw = localStorage.getItem(KEY); if (!raw) return;
+    var d = JSON.parse(raw);
     for (var i=0;i<IDS.length;i++){
       var el = document.getElementById(IDS[i]);
-      if (el && data[IDS[i]]) el.value = data[IDS[i]];
+      if (el && d[IDS[i]]) el.value = d[IDS[i]];
     }
   } catch(e){}
 }
-
-document.addEventListener('input', function(e){
-  if (e.target && e.target.tagName === 'TEXTAREA') save();
-});
+document.addEventListener('input', function(e){ if (e.target && e.target.tagName === 'TEXTAREA') save(); });
 document.addEventListener('keydown', function(e){
   if (e.target && e.target.tagName === 'TEXTAREA') return;
   if (e.key === 'ArrowRight') go(1);
   if (e.key === 'ArrowLeft') go(-1);
 });
-
-load();
-paint();
+load(); paint();
 </script>
 </body>
 </html>
