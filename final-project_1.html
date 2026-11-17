@@ -1,0 +1,837 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charlie: final project, in your words</title>
+<style>
+  :root{--bg:#f6f4ef;--card:#fff;--ink:#1a1a1a;--muted:#5d5d5d;--line:#d8d3c8;
+        --accent:#2a6fb0;--good:#2a7a2a;--bad:#a33;--shadow:0 2px 8px rgba(0,0,0,.08)}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Verdana,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .wrap{max-width:900px;margin:0 auto;padding:16px 16px 100px}
+  header{display:flex;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+  h1{font-size:1.15rem;margin:0}
+  h2{font-size:1.3rem;margin:0 0 8px}
+  .where{margin-left:auto;font-size:.82rem;color:var(--muted)}
+  .bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:14px}
+  .bar div{height:100%;background:var(--accent);width:0;transition:width .25s}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+        padding:17px;box-shadow:var(--shadow);margin-bottom:13px}
+  .screen{display:none} .screen.on{display:block}
+  .lead{font-size:1.03rem;margin:0 0 12px} .muted{color:var(--muted)}
+  .field{display:inline-block;font-size:.72rem;letter-spacing:.06em;font-weight:bold;color:#fff;
+         background:var(--accent);border-radius:4px;padding:3px 9px;margin-bottom:9px;text-transform:uppercase}
+  .field.ethos{background:#6a4a9c} .field.pathos{background:#a3562a} .field.logos{background:#2a6fb0}
+  .prompt{background:#eef3fa;border-left:4px solid var(--accent);padding:10px 13px;
+          border-radius:0 8px 8px 0;margin:0 0 12px;font-size:1rem}
+  .prompt b{display:block;font-size:.72rem;letter-spacing:.06em;color:var(--accent);margin-bottom:3px}
+  .ask{font-size:1.13rem;margin:0 0 10px}
+  textarea{width:100%;font-family:inherit;font-size:1.05rem;line-height:1.5;padding:11px 13px;
+           border:1.5px solid var(--line);border-radius:9px;background:#fffef9;resize:vertical;min-height:84px}
+  textarea:focus{outline:none;border-color:var(--accent)}
+  .hint{font-size:.88rem;color:var(--muted);margin:7px 0 0}
+  .cite{margin:9px 0 0;font-size:.9rem;background:#f1ecfa;border:1px dashed #6a4a9c;border-radius:8px;padding:8px 11px}
+  .cite b{font-size:.7rem;letter-spacing:.06em;color:#6a4a9c;display:block;margin-bottom:2px}
+  .cite code{font-family:inherit;font-weight:bold}
+  .reveals{margin:12px 0 0;border-top:1px solid #ece8df;padding-top:4px}
+  details{margin:0;padding:5px 0}
+  details[open]{padding-bottom:9px}
+  summary{cursor:pointer;font-size:.83rem;color:#9a958a;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"+ ";font-weight:bold}
+  details[open] summary{color:var(--muted)}
+  details[open] summary::before{content:"\2013\00a0"}
+  summary:hover{color:var(--accent)}
+  details p{margin:7px 0 0;font-size:.97rem}
+  details .lbl{font-size:.7rem;letter-spacing:.06em;color:var(--muted);display:block;margin-top:7px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+  .chip{font-family:inherit;font-size:.93rem;padding:8px 13px;border-radius:999px;
+        border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--ink);line-height:1.3;text-align:left}
+  .chip:hover{border-color:var(--accent)}
+  .chip.pick{background:#eef3fa;border-color:var(--accent);color:#1a4c7d;font-weight:bold}
+  .starters{margin:7px 0 0;padding-left:17px} .starters li{margin-bottom:3px;font-size:.97rem}
+  .refs label{display:flex;gap:10px;align-items:flex-start;border:1.2px solid var(--line);
+              border-radius:9px;padding:10px 12px;margin-bottom:8px;background:#fff;cursor:pointer;font-size:.9rem}
+  .refs label:hover{border-color:var(--accent)}
+  .refs input{margin-top:3px;width:18px;height:18px;flex:0 0 auto}
+  .refs span{word-break:break-word}
+  .chk{margin:10px 0 0;font-size:.92rem;background:#f2f7f2;border-left:3px solid var(--good);padding:7px 11px}
+  .chk b{font-size:.7rem;letter-spacing:.06em;color:var(--good);display:block;margin-bottom:2px}
+  .nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);
+       padding:10px 16px;display:flex;gap:9px;align-items:center}
+  .spacer{flex:1}
+  button{font-family:inherit;font-size:1rem;padding:11px 18px;border-radius:10px;
+         border:1.5px solid var(--line);background:#fff;cursor:pointer;color:var(--ink)}
+  button:hover{border-color:var(--accent)}
+  button.go{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:bold}
+  button.sm{font-size:.84rem;padding:8px 12px}
+  .out{white-space:pre-wrap;background:#fffef9;border:1.5px solid var(--line);border-radius:9px;
+       padding:14px 16px;font-size:1.03rem;line-height:1.7;min-height:90px}
+  .copied{color:var(--good);font-weight:bold;margin-left:10px;display:none}
+  .copied.show{display:inline}
+  .three{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:11px}
+  .ap{border:1.2px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+  .ap h3{margin:0 0 2px;font-size:1.1rem}
+  .ap .say{font-size:.82rem;color:var(--muted);font-style:italic;margin:0 0 8px}
+  .ap .r{display:flex;gap:8px;margin-bottom:5px}
+  .ap .t{flex:0 0 70px;font-size:.66rem;font-weight:bold;color:#fff;border-radius:3px;
+         padding:2px 4px;text-align:center;height:fit-content}
+  .menu a{display:block;text-decoration:none;color:inherit;border:1.5px solid var(--line);
+          border-radius:10px;padding:12px 15px;margin-bottom:9px;background:#fff;cursor:pointer}
+  .menu a:hover{border-color:var(--accent)}
+  .menu a b{color:var(--accent)} .menu a span{display:block;font-size:.88rem;color:var(--muted)}
+  .menu a .tag{float:right;font-size:.7rem;letter-spacing:.05em;background:#eef3fa;color:var(--accent);
+               border-radius:4px;padding:2px 7px;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><h1>Final project, in your words</h1><div class="where" id="where"></div></header>
+<div class="bar"><div id="barFill"></div></div>
+<section class="screen on">
+  <div class="card">
+    <h2>Where you're at</h2>
+    <p class="lead">Outline: done. Sources: six of them, in APA, done. What's missing is the writing.</p>
+    <p class="lead">The document says it straight out: <i>use the black point-form ideas as notes to write your own sentences, and put the facts in your own words.</i> That's the whole job. The black notes are not the essay.</p>
+    <p class="lead muted">This runs over a few sessions. Today is the introduction and body paragraph one. The rest is still here when you come back, and nothing you type disappears.</p>
+    <div class="menu" style="margin-top:14px">
+      <a onclick="jump(1)"><b>Logos, pathos, ethos</b><span>30 seconds, if you want the refresher</span></a>
+      <a onclick="jump(2)"><span class="tag">TODAY</span><b>Introduction</b><span>Hook, background, two facts, thesis</span></a>
+      <a onclick="jump(10)"><span class="tag">TODAY</span><b>Body paragraph one</b><span>Algorithms shape what teens see</span></a>
+      <a onclick="jump(18)"><b>Body paragraph two</b><span>Why it matters to teenagers</span></a>
+      <a onclick="jump(26)"><b>Body paragraph three</b><span>Realistic solutions</span></a>
+      <a onclick="jump(34)"><b>Conclusion</b><span>The answer, the fair point, the last line</span></a>
+      <a onclick="jump(42)"><b>Your sources</b><span>The six references in APA, ready to tick and copy</span></a>
+    </div>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <h2>The three, again</h2>
+    <p class="lead muted">Same three as last essay. You already know these.</p>
+    <div class="three">
+      <div class="ap"><h3>Logos</h3><p class="say">LOW-goss · the logic one</p>
+        <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Facts, numbers, experts. Proof someone could check.</div></div>
+        <div class="r"><div class="t" style="background:#2a7a2a">YOURS</div><div>"Statistics Canada found that 91% of 15 to 24 year olds used social networking sites."</div></div></div>
+      <div class="ap"><h3>Pathos</h3><p class="say">PAY-thoss · the feelings one</p>
+        <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Makes the reader feel something.</div></div>
+        <div class="r"><div class="t" style="background:#a3562a">YOURS</div><div>"You and your friend open the same app and see two different worlds."</div></div></div>
+      <div class="ap"><h3>Ethos</h3><p class="say">EE-thoss · the trust one</p>
+        <div class="r"><div class="t" style="background:#2a6fb0">MEANS</div><div>Why believe you? Name real sources.</div></div>
+        <div class="r"><div class="t" style="background:#6a4a9c">YOURS</div><div>"The Competition Bureau of Canada says paid posts have to be disclosed."</div></div></div>
+    </div>
+    <p class="hint">The teacher asks you to name one of these in the introduction. It's the last step of paragraph 1, so you don't have to remember it.</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro">
+  <div class="card">
+    <h2>Introductory paragraph</h2>
+    <p class="lead">Explain the issue. Hook, background, two facts, then your thesis as the very last sentence.</p>
+    <p class="hint">6 steps. One sentence each. Say it, I type it.</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro">
+  <div class="card">
+    <span class="field">Hook</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 1 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Social media looks like entertainment, but posts, ads and recommendations can influence teenagers.</div>
+    <p class="ask">Your opening line. Say it so someone would keep reading.</p>
+    <textarea id="i1" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does it make someone want the next sentence?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Riding Fromme feels like freedom, but almost every trail up there was built by somebody.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">the app feels like it's showing you what you chose</button><button type="button" class="chip" onclick="pick(this)">an ad that didn't look like an ad</button><button type="button" class="chip" onclick="pick(this)">something you bought because you kept seeing it</button><button type="button" class="chip" onclick="pick(this)">how fast a trend arrives and disappears</button><button type="button" class="chip" onclick="pick(this)">nobody decides what's on their own feed</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Most people think … but …</li><li>Every day, teenagers …</li><li>It looks like … It isn't.</li></ul></details></div>
+    <p class="hint">Stuck? What's the last thing you bought or watched because you saw it on a feed?</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro">
+  <div class="card">
+    <span class="field">Background / context</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 2 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>TikTok, YouTube and Instagram: communicating, trends, information, and influencers promoting products and ideas.</div>
+    <p class="ask">What do teenagers actually use these apps for? Name the apps.</p>
+    <textarea id="i2" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Would someone who's never used TikTok follow this?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Fromme has dozens of trails, some sanctioned by the district and some built quietly by riders.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">talking to friends</button><button type="button" class="chip" onclick="pick(this)">watching trends</button><button type="button" class="chip" onclick="pick(this)">finding out what's happening</button><button type="button" class="chip" onclick="pick(this)">influencers showing products</button><button type="button" class="chip" onclick="pick(this)">influencers sharing opinions</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Teenagers use TikTok, YouTube and Instagram to …</li><li>On these apps, people …</li><li>Influencers are people who …</li></ul></details></div>
+    <p class="hint">Say the easy version first: what are the apps for, and what do influencers do on them?</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro">
+  <div class="card">
+    <span class="field logos">Fact + source  ·  logos</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 3 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Statistics Canada (2022): 99% of Canadians aged 15 to 24 used the Internet, and 91% used social networking sites.</div>
+    <p class="ask">Say the numbers in a sentence. Start with “Statistics Canada found that…”</p>
+    <textarea id="i3" placeholder="Type what he says..."></textarea>
+    <p class="cite"><b>PUT THIS AT THE END, BEFORE THE PERIOD</b><code>(Statistics Canada, 2024)</code></p>
+    <p class="chk"><b>CHECK</b>Is the number still attached to the right group? 15 to 24, not everyone.</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>The North Shore Mountain Bike Association reports more than 100 kilometres of trail on the North Shore (NSMBA, 2025).</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">almost all of them are online</button><button type="button" class="chip" onclick="pick(this)">nearly all of them use social apps</button><button type="button" class="chip" onclick="pick(this)">the gap between 99% and 91% is small</button><button type="button" class="chip" onclick="pick(this)">this is 15 to 24 year olds, not everyone</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Statistics Canada found that …</li><li>According to Statistics Canada, …</li><li>In 2022, …</li></ul></details></div>
+    <p class="hint">Naming the source out loud is worth marks twice: research proof, and ethos.</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro">
+  <div class="card">
+    <span class="field ethos">Fact + source  ·  ethos</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 4 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Competition Bureau Canada: paid posts, free products, discounts and other benefits should be disclosed.</div>
+    <p class="ask">Say what influencers are supposed to tell you. Start with “The Competition Bureau of Canada says…”</p>
+    <textarea id="i4" placeholder="Type what he says..."></textarea>
+    <p class="cite"><b>PUT THIS AT THE END, BEFORE THE PERIOD</b><code>(Competition Bureau Canada, 2022)</code></p>
+    <p class="chk"><b>CHECK</b>Does it say what has to be disclosed?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>The District of North Vancouver says trails must be approved before they are built (District of North Vancouver, 2024).</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">paid posts</button><button type="button" class="chip" onclick="pick(this)">free products</button><button type="button" class="chip" onclick="pick(this)">discounts</button><button type="button" class="chip" onclick="pick(this)">any other benefit</button><button type="button" class="chip" onclick="pick(this)">the viewer has a right to know</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>The Competition Bureau of Canada says …</li><li>Influencers are supposed to …</li><li>Under Canadian rules, …</li></ul></details></div>
+    <p class="hint">Plain version: if they got paid or got it free, they have to say so.</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro">
+  <div class="card">
+    <span class="field">Thesis (ONE sentence, 3 ideas)</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 5 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Influencers and social media companies can have too much influence because sponsored content may look like advice, algorithms choose what people see, and teenagers may not notice how this shapes their decisions.</div>
+    <p class="ask">One sentence. Your three reasons in a row. This is the last line of the paragraph.</p>
+    <textarea id="i5" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Three reasons, and does each one answer the main question?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Unofficial trails are a problem because they damage the forest, they are not inspected, and riders get hurt where nobody can reach them.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">sponsored posts look like honest advice</button><button type="button" class="chip" onclick="pick(this)">the algorithm picks what you see</button><button type="button" class="chip" onclick="pick(this)">teenagers don't notice it happening</button><button type="button" class="chip" onclick="pick(this)">the influence is hidden, not obvious</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Influencers and social media companies have too much influence because …, …, and …</li><li>Social media has too much power over teenagers because …</li></ul></details></div>
+    <p class="hint">Keep all three reasons in. Each one is a body paragraph, so they have to match what's coming.</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro">
+  <div class="card">
+    <span class="field">Persuasive technique (the teacher asks this)</span>
+    <p class="hint" style="margin:0 0 9px">Introductory paragraph · step 6 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>CAN YOU IDENTIFY A PERSUASIVE TECHNIQUE? — the teacher wants you to name one you used in this paragraph.</div>
+    <p class="ask">Which one did you use: logos, pathos or ethos? Name it and say which sentence.</p>
+    <textarea id="i6" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Named the technique AND pointed at the sentence?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>I used logos in the sentence with the 100 kilometres, because it's a number someone could check.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">logos: the Statistics Canada numbers</button><button type="button" class="chip" onclick="pick(this)">ethos: the Competition Bureau rule</button><button type="button" class="chip" onclick="pick(this)">pathos: the hook</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>I used … in the sentence where I …</li><li>The … sentence is an example of …</li></ul></details></div>
+    <p class="hint">Easiest answer: the Statistics Canada sentence is logos. The Competition Bureau sentence is ethos.</p>
+  </div>
+</section>
+<section class="screen" data-sec="intro" data-out="1">
+  <div class="card">
+    <h2>Introductory paragraph, yours</h2>
+    <p class="hint" style="margin:0 0 9px">Updates as he types. Nothing to retype.</p>
+    <div class="out" id="out_intro">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_intro')">Copy it</button>
+      <span class="copied" id="cop_out_intro">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
+    </p>
+  </div>
+</section>
+<section class="screen" data-sec="b1">
+  <div class="card">
+    <h2>Body paragraph one</h2>
+    <p class="lead">Algorithms shape what teens see.</p>
+    <p class="hint">6 steps. One sentence each. Say it, I type it.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b1">
+  <div class="card">
+    <span class="field">Topic sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph one · step 1 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Social media algorithms can influence teenagers by choosing which posts appear in their feeds.</div>
+    <p class="ask">Say that like you'd say it. Same point, your words.</p>
+    <textarea id="a1" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does the paragraph's whole job fit in this one sentence?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Unofficial trails damage the forest they are cut through.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">the app decides the order</button><button type="button" class="chip" onclick="pick(this)">you don't choose your feed</button><button type="button" class="chip" onclick="pick(this)">the posts are picked for you</button><button type="button" class="chip" onclick="pick(this)">two people get two different apps</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Social media algorithms …</li><li>The posts a teenager sees are …</li></ul></details></div>
+    <p class="hint">If he wants the outline version, ask once: “would you say it like that?” Then take whatever comes.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b1">
+  <div class="card">
+    <span class="field">Supporting point</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph one · step 2 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Algorithms respond to watching, likes, shares and clicks, and they personalize recommendations.</div>
+    <p class="ask">What is the app actually watching you do?</p>
+    <textarea id="a2" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does it say what the app measures?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Riders cut through soil and roots, and rain washes the loose dirt downhill.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">how long you watch</button><button type="button" class="chip" onclick="pick(this)">what you like</button><button type="button" class="chip" onclick="pick(this)">what you share</button><button type="button" class="chip" onclick="pick(this)">what you click</button><button type="button" class="chip" onclick="pick(this)">what you scroll past</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>The app pays attention to …</li><li>Algorithms respond to …</li><li>Every time you …, the app …</li></ul></details></div>
+    <p class="hint">Stuck? “How does TikTok know what to show you next?”</p>
+  </div>
+</section>
+<section class="screen" data-sec="b1">
+  <div class="card">
+    <span class="field logos">Supporting point + source  ·  logos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph one · step 3 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>MediaSmarts, “AI and Algorithms – Overview”: social media companies use algorithms to increase attention and engagement and to support personalized advertising.</div>
+    <p class="ask">Say what MediaSmarts explains. Start with “MediaSmarts, a Canadian media literacy organisation, explains that…”</p>
+    <textarea id="a3" placeholder="Type what he says..."></textarea>
+    <p class="cite"><b>PUT THIS AT THE END, BEFORE THE PERIOD</b><code>(MediaSmarts, n.d.)</code></p>
+    <p class="chk"><b>CHECK</b>Is the source named in the sentence, and the citation at the end?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>A 2019 trail study found erosion is worst on unplanned routes (Smith, 2019).</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">holding your attention</button><button type="button" class="chip" onclick="pick(this)">keeping you engaged</button><button type="button" class="chip" onclick="pick(this)">selling ads aimed at you</button><button type="button" class="chip" onclick="pick(this)">all three at once</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>MediaSmarts, a Canadian media literacy organisation, explains that …</li><li>According to MediaSmarts, …</li></ul></details></div>
+    <p class="hint">Three words to keep: attention, engagement, advertising.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b1">
+  <div class="card">
+    <span class="field logos">Supporting point + source  ·  logos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph one · step 4 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Matthew Johnson, “How to Train Your Algorithm”: recommendations can use watch time, likes and shares to decide which posts appear in a feed.</div>
+    <p class="ask">Say what decides which posts you see. Name Johnson.</p>
+    <textarea id="a4" placeholder="Type what he says..."></textarea>
+    <p class="cite"><b>PUT THIS AT THE END, BEFORE THE PERIOD</b><code>(Johnson, n.d.)</code></p>
+    <p class="chk"><b>CHECK</b>Does it add something the MediaSmarts sentence didn't?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>The NSMBA says planned trails are built with drainage so water runs off (NSMBA, 2025).</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">watch time</button><button type="button" class="chip" onclick="pick(this)">likes</button><button type="button" class="chip" onclick="pick(this)">shares</button><button type="button" class="chip" onclick="pick(this)">the order posts appear in</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Matthew Johnson explains that …</li><li>Johnson points out that …</li><li>Recommendations can be based on …</li></ul></details></div>
+    <p class="hint">Second time doing this move. Should feel easier than the last one.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b1">
+  <div class="card">
+    <span class="field pathos">Example / explanation  ·  pathos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph one · step 5 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Two teenagers on the same app may see completely different feeds. That is unlike a TV commercial, which was the same for everyone watching.</div>
+    <p class="ask">Explain the difference. You and a friend open the same app — then what?</p>
+    <textarea id="a5" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Would a reader picture it?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>A rider who hits a washed-out section at speed is a long way from any road.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">you and a friend open the same app</button><button type="button" class="chip" onclick="pick(this)">one of you gets bikes, one gets something else</button><button type="button" class="chip" onclick="pick(this)">a TV ad was the same for everybody watching</button><button type="button" class="chip" onclick="pick(this)">nobody else can see your feed</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>For example, …</li><li>Imagine two people who …</li><li>This is different from …</li></ul></details></div>
+    <p class="hint">This is the sentence that makes it land. One is plenty.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b1">
+  <div class="card">
+    <span class="field">Concluding sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph one · step 6 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Personalized feeds can make influence harder for teenagers to notice.</div>
+    <p class="ask">Finish the paragraph. Same idea as your topic sentence, but like you're wrapping up.</p>
+    <textarea id="a6" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Same point as the topic sentence, different words?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Trails built without a plan wear out the forest faster than it can recover.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">you can't compare feeds with anyone</button><button type="button" class="chip" onclick="pick(this)">it doesn't feel like being influenced</button><button type="button" class="chip" onclick="pick(this)">it feels like your own choice</button><button type="button" class="chip" onclick="pick(this)">hidden influence is harder to argue with</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Because feeds are personal, …</li><li>This makes it harder for teenagers to …</li></ul></details></div>
+    
+  </div>
+</section>
+<section class="screen" data-sec="b1" data-out="1">
+  <div class="card">
+    <h2>Body paragraph one, yours</h2>
+    <p class="hint" style="margin:0 0 9px">Updates as he types. Nothing to retype.</p>
+    <div class="out" id="out_b1">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_b1')">Copy it</button>
+      <span class="copied" id="cop_out_b1">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
+    </p>
+  </div>
+</section>
+<section class="screen" data-sec="b2">
+  <div class="card">
+    <h2>Body paragraph two</h2>
+    <p class="lead">Why it matters to teenagers.</p>
+    <p class="hint">6 steps. One sentence each. Say it, I type it.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b2">
+  <div class="card">
+    <span class="field">Topic sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph two · step 1 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Influencers and repeated social media content can shape teenagers' opinions and choices.</div>
+    <p class="ask">Your words. What does seeing the same thing over and over do to you?</p>
+    <textarea id="c1" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does it name both influencers and repeated content?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Unofficial trails are not inspected by anyone.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">seeing something over and over</button><button type="button" class="chip" onclick="pick(this)">trusting someone you watch every day</button><button type="button" class="chip" onclick="pick(this)">what starts to look normal</button><button type="button" class="chip" onclick="pick(this)">what you end up wanting</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Influencers and repeated content can …</li><li>When teenagers see the same thing again and again, …</li></ul></details></div>
+    <p class="hint">Stuck? “If you saw the same product 50 times this week, would you end up wanting it?”</p>
+  </div>
+</section>
+<section class="screen" data-sec="b2">
+  <div class="card">
+    <span class="field">Supporting point</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph two · step 2 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>More scrolling means more videos, trends, viewpoints and ads.</div>
+    <p class="ask">Say the simple version: more time on the app means what?</p>
+    <textarea id="c2" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Short and clear?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Nobody checks the bridges, the landings or the steep exits.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">more videos</button><button type="button" class="chip" onclick="pick(this)">more trends</button><button type="button" class="chip" onclick="pick(this)">more opinions</button><button type="button" class="chip" onclick="pick(this)">more ads</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>The more time you spend scrolling, the more …</li><li>More scrolling means …</li></ul></details></div>
+    <p class="hint">One short sentence is fine here.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b2">
+  <div class="card">
+    <span class="field logos">Fact + source  ·  logos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph two · step 3 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Statistics Canada (2022): 42% of Canadians aged 15 to 24 spent 20 hours or more per week on general Internet use. Careful: that is all Internet use, not social media on its own.</div>
+    <p class="ask">Say the number. Then say it's all internet use, not just social media.</p>
+    <textarea id="c3" placeholder="Type what he says..."></textarea>
+    <p class="cite"><b>PUT THIS AT THE END, BEFORE THE PERIOD</b><code>(Statistics Canada, 2025)</code></p>
+    <p class="chk"><b>CHECK</b>Does it say 20 hours or more, and that it's general Internet use?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>A district report counted 30 unsanctioned trails on Fromme (District of North Vancouver, 2024).</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">20 hours a week or more</button><button type="button" class="chip" onclick="pick(this)">that's about 3 hours a day</button><button type="button" class="chip" onclick="pick(this)">42% of 15 to 24 year olds</button><button type="button" class="chip" onclick="pick(this)">this counts all internet use, not only social media</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Statistics Canada (2025) found that …</li><li>According to Statistics Canada, 42% of …</li></ul></details></div>
+    <p class="hint">The honest version is worth more marks than the big-sounding one. Don't let it turn into “42% are on social media 20 hours a week.”</p>
+  </div>
+</section>
+<section class="screen" data-sec="b2">
+  <div class="card">
+    <span class="field logos">Supporting point + source  ·  logos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph two · step 4 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>CBC Kids News / TED-Ed, “Social Media Algorithms Explained”: TikTok, YouTube and Instagram use algorithms to help determine which posts users see, to keep people interested.</div>
+    <p class="ask">Say what the platforms are trying to do. Name CBC Kids News.</p>
+    <textarea id="c4" placeholder="Type what he says..."></textarea>
+    <p class="cite"><b>PUT THIS AT THE END, BEFORE THE PERIOD</b><code>(CBC Kids News, n.d.)</code></p>
+    <p class="chk"><b>CHECK</b>Source named in the sentence, citation at the end?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Local riders say word of mouth is the only warning about a sketchy line (NSMBA, 2025).</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">keeping you watching</button><button type="button" class="chip" onclick="pick(this)">keeping you interested</button><button type="button" class="chip" onclick="pick(this)">choosing what comes next</button><button type="button" class="chip" onclick="pick(this)">all of the big apps do it</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>CBC Kids News explains that …</li><li>According to CBC Kids News, …</li></ul></details></div>
+    <p class="hint">Keep the words “keep people interested” or “keep people watching”.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b2">
+  <div class="card">
+    <span class="field pathos">Effects  ·  pathos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph two · step 5 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Influence on purchases, on ideas of what is normal, on popular trends, and sometimes on beliefs.</div>
+    <p class="ask">What does it actually change? Pick the one you think matters most and say it.</p>
+    <textarea id="c5" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Is it a real effect, not just “it affects people”?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>A broken wrist in the trees at dusk is a slow rescue.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">what teenagers buy</button><button type="button" class="chip" onclick="pick(this)">what counts as normal</button><button type="button" class="chip" onclick="pick(this)">which trends take off</button><button type="button" class="chip" onclick="pick(this)">what people end up believing</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>This can change …</li><li>The biggest effect is …</li><li>It affects … more than people think.</li></ul></details></div>
+    <p class="hint">He doesn't need all four. One real one beats a list.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b2">
+  <div class="card">
+    <span class="field">Concluding sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph two · step 6 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Teenagers need to ask why a piece of content appeared in their feed, rather than assuming it was random.</div>
+    <p class="ask">Finish it. What should a teenager be asking?</p>
+    <textarea id="c6" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does it follow from the paragraph?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Riding a trail nobody checks means trusting it with nothing to back that up.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">why am I seeing this?</button><button type="button" class="chip" onclick="pick(this)">who put this here?</button><button type="button" class="chip" onclick="pick(this)">who paid for this?</button><button type="button" class="chip" onclick="pick(this)">nothing in a feed is random</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Teenagers need to ask …</li><li>Instead of assuming …, teenagers should …</li></ul></details></div>
+    
+  </div>
+</section>
+<section class="screen" data-sec="b2" data-out="1">
+  <div class="card">
+    <h2>Body paragraph two, yours</h2>
+    <p class="hint" style="margin:0 0 9px">Updates as he types. Nothing to retype.</p>
+    <div class="out" id="out_b2">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_b2')">Copy it</button>
+      <span class="copied" id="cop_out_b2">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
+    </p>
+  </div>
+</section>
+<section class="screen" data-sec="b3">
+  <div class="card">
+    <h2>Body paragraph three</h2>
+    <p class="lead">Realistic solutions. Three of them, then why they work.</p>
+    <p class="hint">6 steps. One sentence each. Say it, I type it.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b3">
+  <div class="card">
+    <span class="field">Topic sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph three · step 1 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Teenagers can reduce unwanted influence when schools, platforms and individuals take practical steps.</div>
+    <p class="ask">Your words. Who has to do something, and what's the point of it?</p>
+    <textarea id="d1" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does it name who acts?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Trail damage drops when the district, the association and riders work together.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">schools teaching it</button><button type="button" class="chip" onclick="pick(this)">the apps changing their rules</button><button type="button" class="chip" onclick="pick(this)">teenagers doing it themselves</button><button type="button" class="chip" onclick="pick(this)">all three together</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Teenagers can reduce unwanted influence when …</li><li>There are practical steps that …</li></ul></details></div>
+    <p class="hint">Three groups: schools, the apps, and teenagers themselves.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b3">
+  <div class="card">
+    <span class="field">Solution 1: media literacy</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph three · step 2 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Teach media literacy: Who made this? Why? Is it paid promotion? Is it fact, opinion or an ad? Can another source confirm it?</div>
+    <p class="ask">What questions should you ask about a post? Pick two or three.</p>
+    <textarea id="d2" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Are the questions something you'd actually ask?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>The district could mark which trails are sanctioned at every trailhead.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">who made this?</button><button type="button" class="chip" onclick="pick(this)">why did they make it?</button><button type="button" class="chip" onclick="pick(this)">did someone pay for it?</button><button type="button" class="chip" onclick="pick(this)">is it a fact, an opinion or an ad?</button><button type="button" class="chip" onclick="pick(this)">can another source confirm it?</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Schools can teach students to ask …</li><li>Media literacy means asking …</li></ul></details></div>
+    <p class="hint">He can pick his favourite questions. Doesn't need all five.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b3">
+  <div class="card">
+    <span class="field ethos">Solution 2: clear labels + source  ·  ethos</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph three · step 3 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Make paid partnerships and free products clearly labelled. Competition Bureau Canada guidance supports disclosure.</div>
+    <p class="ask">What should the apps make influencers do? Name the Competition Bureau again.</p>
+    <textarea id="d3" placeholder="Type what he says..."></textarea>
+    <p class="cite"><b>PUT THIS AT THE END, BEFORE THE PERIOD</b><code>(Competition Bureau Canada, 2022)</code></p>
+    <p class="chk"><b>CHECK</b>Does it say labelled, and who backs that up?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>The NSMBA could post which trails have been inspected this season (NSMBA, 2025).</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">a clear label on paid posts</button><button type="button" class="chip" onclick="pick(this)">saying when a product was free</button><button type="button" class="chip" onclick="pick(this)">labels you can't scroll past</button><button type="button" class="chip" onclick="pick(this)">the same rule for every app</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Social media companies should …</li><li>The Competition Bureau of Canada supports …</li></ul></details></div>
+    <p class="hint">Second time using this source. Same citation as the intro.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b3">
+  <div class="card">
+    <span class="field">Solution 3: platform controls</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph three · step 4 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Platforms could explain their recommendations and make it easier to reset a feed or change advertising settings.</div>
+    <p class="ask">What could TikTok or YouTube let you do that they don't make easy now?</p>
+    <textarea id="d4" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Is it something a platform could actually build?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Riders could report washouts through one app instead of word of mouth.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">tell you why you got a post</button><button type="button" class="chip" onclick="pick(this)">let you reset your feed</button><button type="button" class="chip" onclick="pick(this)">make ad settings easy to find</button><button type="button" class="chip" onclick="pick(this)">let you turn off recommendations</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Platforms could …</li><li>It should be easier to …</li></ul></details></div>
+    <p class="hint">Stuck? “Could you wipe your For You page if you wanted to?”</p>
+  </div>
+</section>
+<section class="screen" data-sec="b3">
+  <div class="card">
+    <span class="field">Explain why these work</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph three · step 5 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>These steps help teenagers recognize persuasion, check claims, and control more of what they see.</div>
+    <p class="ask">Why would those three things make a difference?</p>
+    <textarea id="d5" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does it connect back to the three solutions?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Together those steps mean riders know what they're dropping into.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">you'd notice when you're being sold something</button><button type="button" class="chip" onclick="pick(this)">you could check a claim</button><button type="button" class="chip" onclick="pick(this)">you'd control more of what you see</button><button type="button" class="chip" onclick="pick(this)">you'd make the choice instead of the app</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>These steps would help teenagers …</li><li>Together, these changes mean …</li></ul></details></div>
+    <p class="hint">Three verbs: recognize, check, control.</p>
+  </div>
+</section>
+<section class="screen" data-sec="b3">
+  <div class="card">
+    <span class="field">Concluding sentence</span>
+    <p class="hint" style="margin:0 0 9px">Body paragraph three · step 6 of 6</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Better information and clearer controls make teenagers better able to make their own decisions.</div>
+    <p class="ask">Finish the paragraph. Your words.</p>
+    <textarea id="d6" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Wraps up without adding a new idea?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Better signs and better reporting keep Fromme rideable.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">better information</button><button type="button" class="chip" onclick="pick(this)">clearer controls</button><button type="button" class="chip" onclick="pick(this)">decisions that are actually yours</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>With better information and clearer controls, …</li><li>When teenagers can …, they can …</li></ul></details></div>
+    
+  </div>
+</section>
+<section class="screen" data-sec="b3" data-out="1">
+  <div class="card">
+    <h2>Body paragraph three, yours</h2>
+    <p class="hint" style="margin:0 0 9px">Updates as he types. Nothing to retype.</p>
+    <div class="out" id="out_b3">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_b3')">Copy it</button>
+      <span class="copied" id="cop_out_b3">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
+    </p>
+  </div>
+</section>
+<section class="screen" data-sec="concl">
+  <div class="card">
+    <h2>Concluding paragraph</h2>
+    <p class="lead">Answer the main question. Thesis again in new words, summary, the fair point, then the line that lands.</p>
+    <p class="hint">5 steps. One sentence each. Say it, I type it.</p>
+  </div>
+</section>
+<section class="screen" data-sec="concl">
+  <div class="card">
+    <span class="field">Re-phrased thesis (first sentence)</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 1 of 5</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Influencers and social media companies have significant influence because advertisements and algorithms affect what teenagers repeatedly see.</div>
+    <p class="ask">Your thesis again, said differently. Same meaning, new words.</p>
+    <textarea id="e1" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Different words, same meaning?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Unofficial trails cost the forest and the riders more than they're worth.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">ads</button><button type="button" class="chip" onclick="pick(this)">algorithms</button><button type="button" class="chip" onclick="pick(this)">what gets repeated</button><button type="button" class="chip" onclick="pick(this)">how much teenagers see it</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Influencers and social media companies have real influence because …</li><li>Social media shapes teenagers because …</li></ul></details></div>
+    <p class="hint">Don't copy your intro thesis. The teacher is checking you can say it two ways.</p>
+  </div>
+</section>
+<section class="screen" data-sec="concl">
+  <div class="card">
+    <span class="field">Summary of main ideas</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 2 of 5</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Sponsored content can seem like ordinary advice; personal feeds repeat content; opinions and buying decisions may be affected.</div>
+    <p class="ask">Your three body paragraphs in one or two sentences. No new ideas in here.</p>
+    <textarea id="e2" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>All three paragraphs in there, nothing new?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>They wash out the soil, nobody inspects them, and help is far away.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">sponsored posts look like advice</button><button type="button" class="chip" onclick="pick(this)">feeds repeat what you react to</button><button type="button" class="chip" onclick="pick(this)">opinions and purchases shift</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Sponsored content can …, feeds …, and …</li><li>Overall, …</li></ul></details></div>
+    
+  </div>
+</section>
+<section class="screen" data-sec="concl">
+  <div class="card">
+    <span class="field">The fair point</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 3 of 5</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Not all social media or influencers are harmful, and teenagers still have choices.</div>
+    <p class="ask">Say the other side fairly. Where is it not a problem?</p>
+    <textarea id="e3" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Is it genuinely fair, not sarcastic?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Plenty of rider-built trails are well made, and riders built most of what's up there.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">plenty of influencers are honest</button><button type="button" class="chip" onclick="pick(this)">some content is genuinely useful</button><button type="button" class="chip" onclick="pick(this)">teenagers still choose what to follow</button><button type="button" class="chip" onclick="pick(this)">you can learn real things on these apps</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Not all …</li><li>Of course, …</li><li>Teenagers still …</li></ul></details></div>
+    <p class="hint">This earns marks. It shows you thought about it instead of just picking a side.</p>
+  </div>
+</section>
+<section class="screen" data-sec="concl">
+  <div class="card">
+    <span class="field">Final message</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 4 of 5</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Check sponsors and evidence, adjust your recommendations, and think before watching, believing or sharing.</div>
+    <p class="ask">What do you want the reader to go and do?</p>
+    <textarea id="e4" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Is there an actual action in it?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Ride what's been checked, and report what hasn't.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">check who paid</button><button type="button" class="chip" onclick="pick(this)">check the evidence</button><button type="button" class="chip" onclick="pick(this)">change your settings</button><button type="button" class="chip" onclick="pick(this)">stop before you share</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Before believing a post, …</li><li>The best thing a teenager can do is …</li></ul></details></div>
+    <p class="hint">Say it to one person, not to everyone.</p>
+  </div>
+</section>
+<section class="screen" data-sec="concl">
+  <div class="card">
+    <span class="field">Closing line (the reverse hook)</span>
+    <p class="hint" style="margin:0 0 9px">Concluding paragraph · step 5 of 5</p>
+    <div class="prompt"><b>WHAT THE OUTLINE SAYS</b>Knowing how a feed works helps teenagers make more of their own choices.</div>
+    <p class="ask">End with a bang. Tie it back to your hook.</p>
+    <textarea id="e5" placeholder="Type what he says..."></textarea>
+    
+    <p class="chk"><b>CHECK</b>Does it echo the hook?</p>
+    <div class="reveals"><details><summary>Example</summary>
+      <span class="lbl">FROM AN ESSAY ABOUT UNOFFICIAL TRAILS ON FROMME</span>
+      <p>Fromme feels like freedom. It's worth knowing who built it.</p></details><details><summary>Ideas</summary><span class="lbl">PICK ONE TO TALK ABOUT</span><div class="chips"><button type="button" class="chip" onclick="pick(this)">knowing how the feed works</button><button type="button" class="chip" onclick="pick(this)">knowing who built it</button><button type="button" class="chip" onclick="pick(this)">the choice being yours again</button><button type="button" class="chip" onclick="pick(this)">echo a word from your hook</button></div></details><details><summary>Ways to start</summary><ul class="starters"><li>Knowing … means …</li><li>In the end, …</li><li>Once you know …, …</li></ul></details></div>
+    <p class="hint">Look back at your hook on the first step. Echo a word or an idea from it.</p>
+  </div>
+</section>
+<section class="screen" data-sec="concl" data-out="1">
+  <div class="card">
+    <h2>Concluding paragraph, yours</h2>
+    <p class="hint" style="margin:0 0 9px">Updates as he types. Nothing to retype.</p>
+    <div class="out" id="out_concl">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_concl')">Copy it</button>
+      <span class="copied" id="cop_out_concl">Copied</span>
+      <button class="sm" onclick="home()" style="margin-left:8px">Back to the list</button>
+    </p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <h2>The whole thing</h2>
+    <p class="lead muted">Every word of this came out of your mouth.</p>
+    <div class="out" id="out_all" style="font-size:.98rem">Nothing typed yet.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_all')">Copy all of it</button>
+      <span class="copied" id="cop_out_all">Copied</span>
+    </p>
+    <p class="hint">Paste each paragraph into the blue space under its heading in the teacher's document. The persuasive technique answer goes wherever she asks for it, not inside the paragraph.</p>
+  </div>
+</section>
+<section class="screen">
+  <div class="card">
+    <h2>Your sources</h2>
+    <p class="lead">These go at the end of the essay, on their own page or under their own heading: <b>References</b>.</p>
+    <p class="lead muted">Already written in APA, in alphabetical order. Nothing to word here. Tick the ones you actually used, copy, paste.</p>
+    <div class="refs" id="refList">
+      <label><input type="checkbox" onclick="refs()"><span>CBC Kids News. (n.d.). <i>Social media algorithms explained</i> [Video]. TED-Ed. https://ed.ted.com/lessons/social-media-algorithms-explained-cbc-kids-news</span></label>
+      <label><input type="checkbox" onclick="refs()"><span>Competition Bureau Canada. (2022, January 19). <i>Influencer marketing and the Competition Act.</i> https://competition-bureau.canada.ca/en/deceptive-marketing-practices/types-deceptive-marketing-practices/influencer-marketing-and-competition-act</span></label>
+      <label><input type="checkbox" onclick="refs()"><span>Johnson, M. (n.d.). <i>How to train your algorithm lesson plan.</i> MediaSmarts. https://mediasmarts.ca/teacher-resources/how-train-your-algorithm-lesson</span></label>
+      <label><input type="checkbox" onclick="refs()"><span>MediaSmarts. (n.d.). <i>AI and algorithms – Overview.</i> https://mediasmarts.ca/digital-media-literacy/general-information/ai-and-algorithms/ai-and-algorithms-overview</span></label>
+      <label><input type="checkbox" onclick="refs()"><span>Statistics Canada. (2024). <i>Young people and exposure to harmful online content in 2022</i> [Infographic]. https://www150.statcan.gc.ca/n1/pub/11-627-m/11-627-m2024005-eng.pdf</span></label>
+      <label><input type="checkbox" onclick="refs()"><span>Statistics Canada. (2025, April 23). <i>Online activities of Canadian youth, cybervictimization and exposure to harmful content.</i> https://www150.statcan.gc.ca/n1/pub/11-631-x/11-631-x2025002-eng.htm</span></label>
+    </div>
+    <div class="out" id="out_refs" style="margin-top:13px;font-size:.93rem">Tick the ones you used.</div>
+    <p style="margin-top:13px">
+      <button class="go" onclick="copyOut('out_refs')">Copy the ticked ones</button>
+      <span class="copied" id="cop_out_refs">Copied</span>
+    </p>
+    <p class="hint"><b>The rule:</b> a source belongs in this list only if you named it inside one of your sentences. If you didn't use it, leave it unticked.</p>
+    <p class="hint">The two Statistics Canada entries are different publications. 2024 is the one with 99% and 91%. 2025 is the one with 42%.</p>
+  </div>
+</section>
+</div>
+<div class="nav">
+  <button onclick="go(-1)" id="back">&larr; Back</button>
+  <button class="sm" onclick="home()">List</button>
+  <button class="sm" onclick="saveNow()" id="saveBtn">Save</button>
+  <button class="sm" onclick="seeSoFar()" id="soFar">See it so far</button>
+  <div class="spacer"></div>
+  <button class="go" onclick="go(1)" id="fwd">Next &rarr;</button>
+</div>
+<script>
+var screens = document.querySelectorAll('.screen');
+var at = 0;
+var SECT = {"intro": ["i1", "i2", "i3", "i4", "i5", "i6"], "b1": ["a1", "a2", "a3", "a4", "a5", "a6"], "b2": ["c1", "c2", "c3", "c4", "c5", "c6"], "b3": ["d1", "d2", "d3", "d4", "d5", "d6"], "concl": ["e1", "e2", "e3", "e4", "e5"]};
+var IDS = [];
+for (var k in SECT){ IDS = IDS.concat(SECT[k]); }
+var ORDER = ["intro", "b1", "b2", "b3", "concl"];
+var KEY = 'charlie-final-project-words';
+
+function paint(){
+  for (var i=0;i<screens.length;i++){ screens[i].classList.toggle('on', i===at); }
+  document.getElementById('back').style.visibility = at===0 ? 'hidden' : 'visible';
+  document.getElementById('fwd').style.visibility = at===screens.length-1 ? 'hidden' : 'visible';
+  document.getElementById('barFill').style.width = Math.round((at/(screens.length-1))*100) + '%';
+  document.getElementById('where').textContent = (at+1) + ' of ' + screens.length;
+  var sb = document.getElementById('soFar');
+  sb.style.visibility = screens[at].getAttribute('data-sec') ? 'visible' : 'hidden';
+  build();
+  var ds = document.querySelectorAll('details');
+  for (var d=0;d<ds.length;d++){ ds[d].open = false; }
+  window.scrollTo(0,0);
+  var ta = screens[at].querySelector('textarea');
+  if (ta) ta.focus();
+}
+function refs(){
+  var ls = document.querySelectorAll('#refList label');
+  var picked = [], state = [];
+  for (var i=0;i<ls.length;i++){
+    var cb = ls[i].querySelector('input');
+    state.push(cb.checked ? 1 : 0);
+    if (cb.checked) picked.push(ls[i].querySelector('span').textContent.trim());
+  }
+  var el = document.getElementById('out_refs');
+  if (el) el.textContent = picked.length ? ('References\n\n' + picked.join('\n\n')) : 'Tick the ones you used.';
+  try { localStorage.setItem(KEY + '-refs', JSON.stringify(state)); } catch(e){}
+}
+function loadRefs(){
+  try {
+    var raw = localStorage.getItem(KEY + '-refs'); if (!raw) return;
+    var s = JSON.parse(raw);
+    var ls = document.querySelectorAll('#refList label');
+    for (var i=0;i<ls.length && i<s.length;i++){ ls[i].querySelector('input').checked = !!s[i]; }
+  } catch(e){}
+}
+function pick(btn){
+  var row = btn.parentNode.querySelectorAll('.chip');
+  var was = btn.classList.contains('pick');
+  for (var i=0;i<row.length;i++){ row[i].classList.remove('pick'); }
+  if (!was) btn.classList.add('pick');
+  var ta = btn.closest('.card').querySelector('textarea');
+  if (ta) ta.focus();
+}
+function go(n){ save(); at = Math.min(screens.length-1, Math.max(0, at+n)); paint(); }
+function jump(n){ save(); at = n; paint(); }
+function home(){ jump(0); }
+function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function joinUp(list){
+  var parts = [];
+  for (var i=0;i<list.length;i++){ var v = val(list[i]); if (v) parts.push(v); }
+  return parts.join(' ');
+}
+function set(id, text){
+  var el = document.getElementById(id);
+  if (el) el.textContent = text ? text : 'Nothing typed yet.';
+}
+function build(){
+  var all = [];
+  for (var i=0;i<ORDER.length;i++){
+    var k = ORDER[i];
+    var t = joinUp(SECT[k]);
+    set('out_' + k, t);
+    if (t) all.push(t);
+  }
+  set('out_all', all.join('\n\n'));
+}
+function copyOut(which){
+  var text = document.getElementById(which).textContent;
+  if (text === 'Nothing typed yet.' || text === 'Tick the ones you used.') return;
+  var done = function(){
+    var c = document.getElementById('cop_' + which);
+    if (!c) return;
+    c.className = 'copied show';
+    setTimeout(function(){ c.className = 'copied'; }, 2000);
+  };
+  function fallback(){
+    var t = document.createElement('textarea');
+    t.value = text; t.style.position='fixed'; t.style.top='-1000px';
+    document.body.appendChild(t); t.select();
+    try { document.execCommand('copy'); done(); } catch(e){ alert('Select the text and copy it manually.'); }
+    document.body.removeChild(t);
+  }
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done, fallback); return;
+    }
+  } catch(e){}
+  fallback();
+}
+function save(){
+  var data = {};
+  for (var i=0;i<IDS.length;i++){ data[IDS[i]] = val(IDS[i]); }
+  try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){}
+}
+function saveNow(){
+  save();
+  var b = document.getElementById('saveBtn'); var old = b.textContent;
+  b.textContent = 'Saved'; setTimeout(function(){ b.textContent = old; }, 1500);
+}
+function load(){
+  try {
+    var raw = localStorage.getItem(KEY); if (!raw) return;
+    var d = JSON.parse(raw);
+    for (var i=0;i<IDS.length;i++){
+      var el = document.getElementById(IDS[i]);
+      if (el && d[IDS[i]]) el.value = d[IDS[i]];
+    }
+  } catch(e){}
+}
+document.addEventListener('input', function(e){
+  if (e.target && e.target.tagName === 'TEXTAREA'){ save(); build(); }
+});
+function seeSoFar(){
+  var sec = screens[at].getAttribute('data-sec');
+  if (!sec){ jump(screens.length-1); return; }
+  for (var i=0;i<screens.length;i++){
+    if (screens[i].getAttribute('data-sec') === sec && screens[i].getAttribute('data-out')){ jump(i); return; }
+  }
+  jump(screens.length-1);
+}
+document.addEventListener('keydown', function(e){
+  if (e.target && e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight') go(1);
+  if (e.key === 'ArrowLeft') go(-1);
+});
+load(); loadRefs(); refs(); paint();
+</script>
+</body>
+</html>
